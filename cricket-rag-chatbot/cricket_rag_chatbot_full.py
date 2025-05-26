@@ -4,17 +4,15 @@ import faiss
 import numpy as np
 import streamlit as st
 import requests
-from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer, util
 
 st.set_page_config(page_title="Cricket RAG Chatbot", layout="centered")
 st.title("🏏 Cricket RAG Chatbot")
 st.markdown("Ask me anything from the cricket PDFs!")
 
-load_dotenv("C:/Users/adima/OneDrive/Desktop/.env")
-api_key = os.getenv("OPENROUTER_API_KEY")
+api_key = st.secrets["OPENROUTER_API_KEY"]
 
-pdf_folder_path = "C:/Users/adima/OneDrive/Desktop/rag_pdfs"
+pdf_folder_path = "rag_pdfs"
 
 @st.cache_resource
 def load_pdfs(folder_path):
