@@ -28,7 +28,7 @@ def load_pdfs(folder_path):
     return all_text
 
 @st.cache_resource
-def semantic_chunking(texts, threshold=0.7):
+def semantic_chunking(texts, threshold=0.6):
     paragraphs = []
     for text in texts:
         for para in text.split("\n\n"):
@@ -59,7 +59,7 @@ def build_faiss_index(chunks, _model):
     index.add(embeddings)
     return index, embeddings
 
-def retrieve_chunks(query, chunks, index, model, top_k=2):
+def retrieve_chunks(query, chunks, index, model, top_k=5):
     query_embedding = model.encode([query])
     scores, indices = index.search(np.array(query_embedding), top_k)
     return [chunks[i] for i in indices[0]]
@@ -68,7 +68,7 @@ def build_prompt(query, context_chunks, max_chars=6000):
     context = "\n\n".join(context_chunks)
     if len(context) > max_chars:
         context = context[:max_chars]
-    return f"""You are a cricket expert assistant. Use only the following context from official cricket documents and history to answer the user's question. Do not guess. If the answer is not found, say 'Sorry, I couldn't find that in the documents.'
+    return f"""You are a cricket assistant trained strictly on official cricket documents. Use only the information in the context below to answer the question. Do not guess or provide information not found in the context. There are a lot of information provided in the documents. Even if the questions are not very accurate, Try to understand it in and answer properly. Strictly do not hallucinate. If the answer is not present, respond with: 'Sorry! The required information for your question is not available in the provided documents. If you want further assistance please visit the Official ICC website!'
 
 Context:
 {context}
